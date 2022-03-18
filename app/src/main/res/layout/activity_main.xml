@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:orientation="vertical">
 
@@ -33,10 +33,10 @@
                 android:ems="10"
                 android:inputType="textEmailAddress"
                 android:padding="8dp"
-                android:hint="Email"
-                android:textColorHint="#ffffff"
+                android:hint="@string/email"
+                android:textColorHint="#000000"
                 android:maxLines="1"
-                android:drawableLeft="@drawable/ic_email_white_18dp" />
+                />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -52,12 +52,12 @@
                 android:paddingRight="8dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#ffffff"
-                android:hint="Password"
+                android:textColorHint="#000000"
+                android:hint="@string/password"
                 android:maxLines="1"
                 android:background="@android:color/transparent"
                 android:layout_marginTop="4dp"
-                android:drawableLeft="@drawable/ic_lock_white_24dp" />
+            />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -66,11 +66,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnLogin"
-                android:background="@drawable/background_login"
-                android:text="Login"
+                android:text="@string/login"
                 android:textAllCaps="false"
                 android:textStyle="normal"
                 android:layout_marginTop="30dp"
+                android:background="@android:color/transparent"
                 style="@style/Base.TextAppearance.AppCompat.Body1"
                 android:textSize="18sp"
                 android:textColor="#f16f7d"
@@ -86,7 +86,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="18dp"
                 android:layout_gravity="center_horizontal"
-                android:text="New User? Register"
+                android:text="@string/new_user_register"
                 android:textSize="22sp" />
 
         </LinearLayout>

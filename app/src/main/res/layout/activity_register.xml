@@ -27,7 +27,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/round_account_circle_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/first_name"
@@ -37,7 +36,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="black" />/>
+                android:textColorHint="#000000" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -49,7 +48,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/round_phone_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/middle_name"
@@ -59,7 +57,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" /> />
+                android:textColorHint="#000000" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -71,7 +69,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/round_email_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/last_name"
@@ -81,7 +78,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" /> />
+                android:textColorHint="#000000" />
 
            <!-- <View
                 android:layout_width="match_parent"
@@ -106,10 +103,13 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" />/>
+                android:textColorHint="#000000"
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
             <View
-                android:id="@+id/view"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#f9d7db" />
@@ -128,7 +128,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" />/>
+                android:textColorHint="#000000" />
 
             <View
                 android:id="@+id/view"
@@ -142,7 +142,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/baseline_lock_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/email"
@@ -152,7 +151,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" />
+                android:textColorHint="#000000" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -164,7 +163,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/baseline_lock_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/password"
@@ -174,7 +172,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" />
+                android:textColorHint="#000000" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -185,7 +183,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/transparent"
-                android:drawableLeft="@drawable/baseline_lock_white_18dp"
                 android:drawablePadding="12dp"
                 android:ems="10"
                 android:hint="@string/confirm_password"
@@ -195,7 +192,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="8dp"
                 android:paddingBottom="8dp"
-                android:textColorHint="#black" />
+                android:textColorHint="#000000" />
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
@@ -204,7 +201,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/btnRegister"
-                android:background="@drawable/background_login"
+                android:background="@android:color/transparent"
                 android:text="@string/register"
                 android:textAllCaps="false"
                 android:textStyle="normal"
@@ -222,7 +219,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
-                android:background="@drawable/background_login"
+                android:background="@android:color/transparent"
                 android:clickable="true"
                 android:padding="16dp"
                 android:text="@string/reg_login"

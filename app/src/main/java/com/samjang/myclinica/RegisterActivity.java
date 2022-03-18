@@ -2,34 +2,74 @@ package com.samjang.myclinica;
 
 //import static androidx.core.content.ContextCompat.startActivity;
 
-import android.content.ContentValues;
+import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.samjang.myclinica.db.DatabaseHelper;
+import com.samjang.myclinica.db.MySingleton;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private SQLiteOpenHelper openHelper;
-    private SQLiteDatabase db;
+
     private EditText regFirstName, regMiddleName, regLastName, regBirthday, regPhone, regEmail, regPassword, regConfirmPassword;
     private Button registerBtn,loginBtn;
+
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_MESSAGE = "message";
+    private static final String KEY_FIRST_NAME = "firstName";
+    private static final String KEY_MIDDLE_NAME = "middleName";
+    private static final String KEY_LAST_NAME = "lastName";
+    private static final String KEY_BIRTH_DAY = "birthDay";
+    private static final String KEY_PHONE_NUM = "phoneNum";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_EMPTY = "";
+   // private String register_url = "http://192.168.100.13/myClinica/register.php";
+ //   private SessionHandler session;
+    private ProgressDialog pDialog;
+
+    private String firstName;
+    private String middleName;
+    private String lastName;
+    private String birthDay;
+    private String phoneNum;
+    private String email;
+    private String password;
+    private String confirmPassword;
+
+    final Calendar myCalendar= Calendar.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    //    session = new SessionHandler(getApplicationContext());
         setContentView(R.layout.activity_register);
 
-        openHelper = new DatabaseHelper(this);
+        //openHelper = new DatabaseHelper(this);
 
         loginBtn = findViewById(R.id.btnLogin);
         registerBtn = findViewById(R.id.btnRegister);
@@ -43,28 +83,42 @@ public class RegisterActivity extends AppCompatActivity {
         regPassword = findViewById(R.id.etRegPassword);
         regConfirmPassword = findViewById(R.id.etRegConfirmPassword);
 
+        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH,month);
+                myCalendar.set(Calendar.DAY_OF_MONTH,day);
+                updateLabel();
+            }
+        };
+
+        regBirthday.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new DatePickerDialog(RegisterActivity.this,date,myCalendar.get(Calendar.YEAR),myCalendar.get(Calendar.MONTH),myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db = openHelper.getWritableDatabase();
-                String firstName = regFirstName.getText().toString().trim();
-                String middleName = regMiddleName.getText().toString().trim();
-                String lastName = regLastName.getText().toString().trim();
-                String birthDay = regBirthday.getText().toString().trim();
-                String phoneNum = regPhone.getText().toString().trim();
-                String email = regEmail.getText().toString().trim();
-                String password = regPassword.getText().toString().trim();
-                String confirmPassword = regConfirmPassword.getText().toString().trim();
-
-                if (firstName.isEmpty() || middleName.isEmpty() || lastName.isEmpty() || birthDay.isEmpty() || phoneNum.isEmpty()
-                        || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                    Toast.makeText(RegisterActivity.this, "Please fill all the details", Toast.LENGTH_SHORT).show();
-                } else {
-                    insertData(firstName, middleName, lastName, birthDay, phoneNum, email, password);
-                    Toast.makeText(RegisterActivity.this, "Registration Successful", Toast.LENGTH_SHORT).show();
+                //db = openHelper.getWritableDatabase();
+                firstName = regFirstName.getText().toString().toLowerCase().trim();
+                middleName = regMiddleName.getText().toString().toLowerCase().trim();
+                lastName = regLastName.getText().toString().toLowerCase().trim();
+                birthDay = regBirthday.getText().toString().toLowerCase().trim();
+                phoneNum = regPhone.getText().toString().toLowerCase().trim();
+                email = regEmail.getText().toString().toLowerCase().trim();
+                password = regPassword.getText().toString().toLowerCase().trim();
+                confirmPassword = regConfirmPassword.getText().toString().toLowerCase().trim();
+                if (validateInputs()) {
+                    registerUser();
                 }
             }
         });
+
+
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,17 +128,150 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
-    public void insertData(String firstName,String middleName,String lastName,String birthDay, String phoneNum,
-                           String email, String password){
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DatabaseHelper.COL_2,email);
-        contentValues.put(DatabaseHelper.COL_3,password);
-        contentValues.put(DatabaseHelper.COL_4,firstName);
-        contentValues.put(DatabaseHelper.COL_5,middleName);
-        contentValues.put(DatabaseHelper.COL_6,lastName);
-        contentValues.put(DatabaseHelper.COL_7,phoneNum);
-        contentValues.put(DatabaseHelper.COL_8,birthDay);
 
-        long id = db.insert(DatabaseHelper.TABLE_NAME,null,contentValues);
+    private void updateLabel(){
+        String myFormat="MM/dd/yy";
+        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+        regBirthday.setText(dateFormat.format(myCalendar.getTime()));
     }
+
+    private void loadHome() {
+        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+        startActivity(i);
+        finish();
+
+    }
+
+    private void displayLoader() {
+        pDialog = new ProgressDialog(RegisterActivity.this);
+        pDialog.setMessage("Signing Up.. Please wait...");
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+    }
+
+    private void registerUser() {
+        displayLoader();
+       /*JSONObject request = new JSONObject();
+        try {
+            //Populate the request parameters
+            request.put(KEY_FIRST_NAME, firstName);
+            request.put(KEY_MIDDLE_NAME, middleName);
+            request.put(KEY_LAST_NAME, lastName);
+            request.put(KEY_BIRTH_DAY, birthDay);
+            request.put(KEY_PHONE_NUM, phoneNum);
+            request.put(KEY_EMAIL, email);
+            request.put(KEY_PASSWORD, password);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+        Map<String, String> request = new HashMap<>();
+        request.put(KEY_FIRST_NAME, firstName);
+        request.put(KEY_MIDDLE_NAME, middleName);
+        request.put(KEY_LAST_NAME, lastName);
+        request.put(KEY_BIRTH_DAY, birthDay);
+        request.put(KEY_PHONE_NUM, phoneNum);
+        request.put(KEY_EMAIL, email);
+        request.put(KEY_PASSWORD, password);
+        Log.d("tag", request.toString());
+        String register_url = "http://192.168.100.13/myClinica/register.php";
+        Log.d("JSONtest", "Pre-Testing JSONreq");
+        JsonObjectRequest jsArrayRequest = new JsonObjectRequest
+                (Request.Method.POST, register_url, new JSONObject(request), response -> {
+                    Log.d("JSONtest", "Before pDialog");
+                    pDialog.dismiss();
+                    Log.d("JSONtest", "Confirm JSONreq");
+                    try {
+                        //Check if user got registered successfully
+                        if (response.getInt(KEY_STATUS) == 0) {
+                            //Set the user session
+                            //session.loginUser(username,fullName);
+                            Log.d("loadhome", "success?");
+                            loadHome();
+
+                        }else if(response.getInt(KEY_STATUS) == 1){
+                            //Display error message if username is already existsing
+                            regEmail.setError("Use another email!");
+                            regEmail.requestFocus();
+
+                        }else{
+                            Toast.makeText(getApplicationContext(),
+                                    response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }, error -> {
+                    pDialog.dismiss();
+
+                    /*//Display error message whenever an error occurs
+                    Toast.makeText(getApplicationContext(),
+                            error.getMessage(), Toast.LENGTH_SHORT).show();*/
+
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);
+    }
+
+    /**
+     * Validates inputs and shows error if any
+     * @return
+     */
+    private boolean validateInputs() {
+        if (KEY_EMPTY.equals(firstName)) {
+            regFirstName.setError("First Name cannot be empty");
+            regFirstName.requestFocus();
+            return false;
+
+        }
+        if (KEY_EMPTY.equals(middleName)) {
+            regMiddleName.setError("Middle Name cannot be empty");
+            regMiddleName.requestFocus();
+            return false;
+        }
+        if (KEY_EMPTY.equals(lastName)) {
+            regLastName.setError("Last Name cannot be empty");
+            regLastName.requestFocus();
+            return false;
+        }
+
+        if (KEY_EMPTY.equals(birthDay)) {
+            regBirthday.setError("Birth day cannot be empty");
+            regBirthday.requestFocus();
+            return false;
+        }
+        if (KEY_EMPTY.equals(phoneNum)) {
+            regPhone.setError("Phone Number cannot be empty");
+            regPhone.requestFocus();
+            return false;
+        }
+        if (KEY_EMPTY.equals(email)) {
+            regEmail.setError("Email cannot be empty");
+            regEmail.requestFocus();
+            return false;
+        }
+        if (KEY_EMPTY.equals(password)) {
+            regPassword.setError("Password cannot be empty");
+            regPassword.requestFocus();
+            return false;
+        }
+        if (KEY_EMPTY.equals(confirmPassword)) {
+            regConfirmPassword.setError("Confirm Password cannot be empty");
+            regConfirmPassword.requestFocus();
+            return false;
+        }
+        if (!password.equals(confirmPassword)) {
+            regConfirmPassword.setError("Password and Confirm Password does not match");
+            regConfirmPassword.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+
 }
