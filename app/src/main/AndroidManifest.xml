@@ -28,6 +28,11 @@
             android:exported="true"
             android:theme="@style/Theme.MyClinica.NoActionBar"
         />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MyClinica.NoActionBar"
+            />
 
     </application>
 

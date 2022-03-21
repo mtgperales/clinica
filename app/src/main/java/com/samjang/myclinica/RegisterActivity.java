@@ -23,7 +23,6 @@ import org.json.JSONObject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.samjang.myclinica.db.DatabaseHelper;
 import com.samjang.myclinica.db.MySingleton;
 
 import java.text.SimpleDateFormat;
@@ -48,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_EMPTY = "";
-   // private String register_url = "http://192.168.100.13/myClinica/register.php";
+    private String register_url = "http://192.168.100.13/myClinica/register.php";
  //   private SessionHandler session;
     private ProgressDialog pDialog;
 
@@ -69,8 +68,6 @@ public class RegisterActivity extends AppCompatActivity {
     //    session = new SessionHandler(getApplicationContext());
         setContentView(R.layout.activity_register);
 
-        //openHelper = new DatabaseHelper(this);
-
         loginBtn = findViewById(R.id.btnLogin);
         registerBtn = findViewById(R.id.btnRegister);
 
@@ -83,7 +80,7 @@ public class RegisterActivity extends AppCompatActivity {
         regPassword = findViewById(R.id.etRegPassword);
         regConfirmPassword = findViewById(R.id.etRegConfirmPassword);
 
-        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 myCalendar.set(Calendar.YEAR, year);
@@ -103,15 +100,14 @@ public class RegisterActivity extends AppCompatActivity {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //db = openHelper.getWritableDatabase();
-                firstName = regFirstName.getText().toString().toLowerCase().trim();
-                middleName = regMiddleName.getText().toString().toLowerCase().trim();
-                lastName = regLastName.getText().toString().toLowerCase().trim();
-                birthDay = regBirthday.getText().toString().toLowerCase().trim();
-                phoneNum = regPhone.getText().toString().toLowerCase().trim();
-                email = regEmail.getText().toString().toLowerCase().trim();
-                password = regPassword.getText().toString().toLowerCase().trim();
-                confirmPassword = regConfirmPassword.getText().toString().toLowerCase().trim();
+                firstName = regFirstName.getText().toString().trim();
+                middleName = regMiddleName.getText().toString().trim();
+                lastName = regLastName.getText().toString().trim();
+                birthDay = regBirthday.getText().toString().trim();
+                phoneNum = regPhone.getText().toString().trim();
+                email = regEmail.getText().toString().trim();
+                password = regPassword.getText().toString().trim();
+                confirmPassword = regConfirmPassword.getText().toString().trim();
                 if (validateInputs()) {
                     registerUser();
                 }
@@ -153,65 +149,71 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerUser() {
         displayLoader();
-       /*JSONObject request = new JSONObject();
+       JSONObject request = new JSONObject();
         try {
             //Populate the request parameters
+            request.put(KEY_EMAIL, email);
+            request.put(KEY_PASSWORD, password);
             request.put(KEY_FIRST_NAME, firstName);
             request.put(KEY_MIDDLE_NAME, middleName);
             request.put(KEY_LAST_NAME, lastName);
-            request.put(KEY_BIRTH_DAY, birthDay);
             request.put(KEY_PHONE_NUM, phoneNum);
-            request.put(KEY_EMAIL, email);
-            request.put(KEY_PASSWORD, password);
+            request.put(KEY_BIRTH_DAY, birthDay);
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }*/
-        Map<String, String> request = new HashMap<>();
+        }
+        /*Map<String, String> request = new HashMap<>();
         request.put(KEY_FIRST_NAME, firstName);
         request.put(KEY_MIDDLE_NAME, middleName);
         request.put(KEY_LAST_NAME, lastName);
         request.put(KEY_BIRTH_DAY, birthDay);
         request.put(KEY_PHONE_NUM, phoneNum);
         request.put(KEY_EMAIL, email);
-        request.put(KEY_PASSWORD, password);
+        request.put(KEY_PASSWORD, password);*/
         Log.d("tag", request.toString());
-        String register_url = "http://192.168.100.13/myClinica/register.php";
         Log.d("JSONtest", "Pre-Testing JSONreq");
         JsonObjectRequest jsArrayRequest = new JsonObjectRequest
-                (Request.Method.POST, register_url, new JSONObject(request), response -> {
-                    Log.d("JSONtest", "Before pDialog");
-                    pDialog.dismiss();
-                    Log.d("JSONtest", "Confirm JSONreq");
-                    try {
-                        //Check if user got registered successfully
-                        if (response.getInt(KEY_STATUS) == 0) {
-                            //Set the user session
-                            //session.loginUser(username,fullName);
-                            Log.d("loadhome", "success?");
-                            loadHome();
+                (Request.Method.POST, register_url, request, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("response", response.toString());
+                        pDialog.dismiss();
+                        Log.d("JSONtest", "Confirm JSONreq");
+                        try {
+                            //Check if user got registered successfully
+                            if (response.getInt(KEY_STATUS) == 0) {
+                                //Set the user session
+                                //session.loginUser(username,fullName);
+                                loadHome();
 
-                        }else if(response.getInt(KEY_STATUS) == 1){
-                            //Display error message if username is already existsing
-                            regEmail.setError("Use another email!");
-                            regEmail.requestFocus();
+                            }else if(response.getInt(KEY_STATUS) == 1){
+                                //Display error message if email is already used
+                                regEmail.setError("Use another Email!");
+                                regEmail.requestFocus();
 
-                        }else{
-                            Toast.makeText(getApplicationContext(),
-                                    response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
+                            }else{
+                                Toast.makeText(getApplicationContext(),
+                                        response.getString(KEY_MESSAGE), Toast.LENGTH_SHORT).show();
 
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
-                }, error -> {
-                    pDialog.dismiss();
+                }, new Response.ErrorListener() {
 
-                    /*//Display error message whenever an error occurs
-                    Toast.makeText(getApplicationContext(),
-                            error.getMessage(), Toast.LENGTH_SHORT).show();*/
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        pDialog.dismiss();
+                        //Log.d("testReq", request.toString());
+                        //Display error message whenever an error occurs
+                        //Toast.makeText(getApplicationContext(),
+                          //      error.getMessage(), Toast.LENGTH_SHORT).show();
 
+                    }
                 });
+
 
         // Access the RequestQueue through your singleton class.
         MySingleton.getInstance(this).addToRequestQueue(jsArrayRequest);

@@ -1,6 +1,4 @@
 package com.samjang.myclinica.db;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 
 import com.android.volley.Request;
@@ -8,10 +6,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
 public class MySingleton {
-    @SuppressLint("StaticFieldLeak")
     private static MySingleton mInstance;
     private RequestQueue mRequestQueue;
-    @SuppressLint("StaticFieldLeak")
     private static Context mCtx;
 
     private MySingleton(Context context) {
