@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,7 @@ import org.json.JSONObject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.samjang.myclinica.db.MySingleton;
+import com.samjang.myclinica.session.SessionPersistence;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String KEY_PASSWORD = "password";
     private static final String KEY_EMPTY = "";
     private String register_url = "http://192.168.100.13/myClinica/register.php";
- //   private SessionHandler session;
+    private SessionPersistence session;
     private ProgressDialog pDialog;
 
     private String firstName;
@@ -65,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    //    session = new SessionHandler(getApplicationContext());
+        session = new SessionPersistence(getApplicationContext());
         setContentView(R.layout.activity_register);
 
         loginBtn = findViewById(R.id.btnLogin);
@@ -79,6 +81,8 @@ public class RegisterActivity extends AppCompatActivity {
         regEmail = findViewById(R.id.etRegEmail);
         regPassword = findViewById(R.id.etRegPassword);
         regConfirmPassword = findViewById(R.id.etRegConfirmPassword);
+
+
 
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -184,7 +188,7 @@ public class RegisterActivity extends AppCompatActivity {
                             //Check if user got registered successfully
                             if (response.getInt(KEY_STATUS) == 0) {
                                 //Set the user session
-                                //session.loginUser(username,fullName);
+                                session.loginUser(email,firstName);
                                 loadHome();
 
                             }else if(response.getInt(KEY_STATUS) == 1){
@@ -206,10 +210,10 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         pDialog.dismiss();
-                        //Log.d("testReq", request.toString());
+                        Log.d("testReq", request.toString());
                         //Display error message whenever an error occurs
-                        //Toast.makeText(getApplicationContext(),
-                          //      error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),
+                                error.getMessage(), Toast.LENGTH_SHORT).show();
 
                     }
                 });
@@ -256,6 +260,14 @@ public class RegisterActivity extends AppCompatActivity {
             regEmail.requestFocus();
             return false;
         }
+        if (!isEmailValid(email)){
+            //Toast.makeText(getApplicationContext(),
+            //        "Invalid Email", Toast.LENGTH_SHORT).show();
+            regEmail.setError("Invalid Email");
+            regEmail.requestFocus();
+            return false;
+        }
+
         if (KEY_EMPTY.equals(password)) {
             regPassword.setError("Password cannot be empty");
             regPassword.requestFocus();
@@ -272,8 +284,19 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
 
+        if(TextUtils.isEmpty(password) || password.length() < 8){
+            regPassword.setError("Minimum of 8 characters is required");
+            regPassword.requestFocus();
+            return false;
+        }
+
         return true;
     }
+
+    boolean isEmailValid(CharSequence email) {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
 
 
 }
